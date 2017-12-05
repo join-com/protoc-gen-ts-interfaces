@@ -37,6 +37,12 @@ export class ExportMap {
   messageEntities: MessageEntity[] = [];
   pkgModules: PkgModule[] = [];
 
+  constructor(fileDescriptorProto: FileDescriptorProto[]) {
+    fileDescriptorProto.forEach((protoFileDescriptor: FileDescriptorProto) => {
+      this.addFileDescriptor(protoFileDescriptor);
+    })
+  }
+
   addMessageWithNested(pkgModule: PkgModule, message: DescriptorProto) {
     const messageEntity: MessageEntity = {
       pkgModule,

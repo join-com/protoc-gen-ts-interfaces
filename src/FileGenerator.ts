@@ -1,8 +1,8 @@
 import { ExportMap } from "./ExportMap";
 import { Printer } from "./Printer";
 import { FileDescriptorProto } from "google-protobuf/google/protobuf/descriptor_pb";
-import { printEntity } from "./entity";
-import { printEnum } from "./enum";
+import { Entity } from "./Entity";
+import { Enum } from "./Enum";
 
 export class FileGenerator {
   private readonly fileDescriptor: FileDescriptorProto
@@ -34,14 +34,16 @@ export class FileGenerator {
 
   private printEnums(){
     this.fileDescriptor.getEnumTypeList().forEach(enumType => {
-      this.printer.print(printEnum(enumType));
+      const enumPrinter = new Enum()
+      this.printer.print(enumPrinter.print(enumType));
     });
   }
 
   private printMessages(){
     this.fileDescriptor.getMessageTypeList().forEach(messageType => {
       const messageEntry = this.exportMap.findMessageEntity(messageType.getName(), this.fileName)
-      this.printer.print(printEntity(this.fileDescriptor.getName(), messageEntry, this.exportMap.messageEntities, this.exportMap.enumEntities));
+      const entity = new Entity(this.fileDescriptor.getName(), this.exportMap.messageEntities, this.exportMap.enumEntities)
+      this.printer.print(entity.print(messageEntry));
     });
   }
 }
