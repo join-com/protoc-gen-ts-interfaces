@@ -1,0 +1,19 @@
+{
+  "name": "ts-interfaces-protoc-gen",
+  "version": "0.0.1",
+  "description": "Protocol Buffers Compiler (protoc) plugin for gerenting interfaces in TypeScript.",
+  "main": "index.js",
+  "author": "JOIN Team",
+  "license": "MIT",
+  "dependencies": {
+    "google-protobuf": "^3.5.0"
+  },
+  "devDependencies": {
+    "@types/google-protobuf": "^3.2.7",
+    "@types/node": "^8.0.54",
+    "jest-cli": "^21.2.1",
+    "ts-jest": "^21.2.4",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.2"
+  }
+}
