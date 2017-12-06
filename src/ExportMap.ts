@@ -49,7 +49,7 @@ export class ExportMap {
       name: message.getName(),
       printName: `I${message.getName()}`,
       descriptor: message,
-      messageOptions: message.getOptions(),
+      messageOptions: message.getOptions()
     };
     this.messageEntities.push(messageEntity)
     message.getNestedTypeList().forEach(nested => {

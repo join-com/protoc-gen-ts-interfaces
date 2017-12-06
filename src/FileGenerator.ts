@@ -3,6 +3,7 @@ import { Printer } from "./Printer";
 import { FileDescriptorProto } from "google-protobuf/google/protobuf/descriptor_pb";
 import { Entity } from "./Entity";
 import { Enum } from "./Enum";
+import { Service } from "./Service";
 
 const SPECIFIC_IMPORT_TYPES = [
   "google/protobuf/timestamp.proto",
@@ -26,6 +27,7 @@ export class FileGenerator {
 
   public print() {
     this.printImports()
+    this.printServices()
     this.printEnums()
     this.printMessages()
 
@@ -53,6 +55,13 @@ export class FileGenerator {
       const messageEntry = this.exportMap.findMessageEntity(messageType.getName(), this.fileName)
       const entity = new Entity(this.fileDescriptor.getName(), this.exportMap.messageEntities, this.exportMap.enumEntities)
       this.printer.print(entity.print(messageEntry));
+    });
+  }
+
+  private printServices() {
+    this.fileDescriptor.getServiceList().forEach(service => {
+      const svc = new Service(this.fileDescriptor.getName(), this.exportMap.messageEntities)
+      this.printer.print(svc.print(service));
     });
   }
 }

@@ -50,13 +50,13 @@ export class Field {
     });
   }
 
-  private fieldWithLocalType(fieldName: string, messageEntity: MessageEntity | EnumEntity): string {
-    return `${fieldName}: ${messageEntity.printName}`
+  private fieldWithLocalType(fieldName: string, messageEntity: MessageEntity | EnumEntity, optional = false): string {
+    return `${fieldName}${optional ? '?' : ''}: ${messageEntity.printName}`
   }
 
 
-  private fieldWithExternalType(fieldName: string, messageEntity: MessageEntity | EnumEntity): string {
-    return `${fieldName}: ${messageEntity.pkgModule.aliasName}.${messageEntity.printName}`
+  private fieldWithExternalType(fieldName: string, messageEntity: MessageEntity | EnumEntity, optional = false): string {
+    return `${fieldName}${optional ? '?' : ''}: ${messageEntity.pkgModule.aliasName}.${messageEntity.printName}`
   }
 
   private isSpecificType(messageEntity: MessageEntity) {
@@ -73,9 +73,9 @@ export class Field {
     if (this.isSpecificType(nestedMessageEntity)) {
       this.printer.printIndentedLn(this.fieldWithSpecificType(fieldName, nestedMessageEntity))
     } else if (nestedMessageEntity.pkgModule.name === this.pkgModuleName) {
-      this.printer.printIndentedLn(this.fieldWithLocalType(fieldName, nestedMessageEntity))
+      this.printer.printIndentedLn(this.fieldWithLocalType(fieldName, nestedMessageEntity, true))
     } else {
-      this.printer.printIndentedLn(this.fieldWithExternalType(fieldName, nestedMessageEntity))
+      this.printer.printIndentedLn(this.fieldWithExternalType(fieldName, nestedMessageEntity, true))
     }
   }
 
