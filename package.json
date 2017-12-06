@@ -17,6 +17,8 @@
     "protoc-gen-ts-interfaces": "bin/protoc-gen-ts-interfaces"
   },
   "dependencies": {
+    "@types/dot": "^1.1.2",
+    "dot": "^1.1.2",
     "google-protobuf": "^3.5.0"
   },
   "devDependencies": {

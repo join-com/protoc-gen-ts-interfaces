@@ -4,6 +4,7 @@ import { FileDescriptorProto } from "google-protobuf/google/protobuf/descriptor_
 import { Entity } from "./Entity";
 import { Enum } from "./Enum";
 import { Service } from "./Service";
+import { Client } from "./Client";
 
 const SPECIFIC_IMPORT_TYPES = [
   "google/protobuf/timestamp.proto",
@@ -28,6 +29,7 @@ export class FileGenerator {
   public print() {
     this.printImports()
     this.printServices()
+    this.printClient()
     this.printEnums()
     this.printMessages()
 
@@ -35,12 +37,16 @@ export class FileGenerator {
   }
 
   private printImports(){
+    if (this.fileDescriptor.getServiceList().length > 0) {
+      this.printer.printLn(`import { Client } from "../src/grpc/client";`);
+    }
     this.fileDescriptor.getDependencyList().forEach((dependency: string) => {
       if (SPECIFIC_IMPORT_TYPES.indexOf(dependency) === -1) {
         const pkgModule = this.exportMap.findPkgModule(dependency)
         this.printer.printLn(`import * as ${pkgModule.aliasName} from "./${pkgModule.importName}";`);
       }
     });
+
   }
 
   private printEnums(){
@@ -62,6 +68,13 @@ export class FileGenerator {
     this.fileDescriptor.getServiceList().forEach(service => {
       const svc = new Service(this.fileDescriptor.getName(), this.exportMap.messageEntities)
       this.printer.print(svc.print(service));
+    });
+  }
+
+  private printClient() {
+    this.fileDescriptor.getServiceList().forEach(service => {
+      const client = new Client(this.fileDescriptor.getName(), this.exportMap.messageEntities)
+      this.printer.print(client.print(service));
     });
   }
 }
