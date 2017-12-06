@@ -12,7 +12,9 @@ const SPECIFIC_TYPES: { [index: string]: string } = {
   UInt32Value: "number",
   BoolValue: "boolean",
   StringValue: "string",
-  BytesValue: "Uint8Array"
+  BytesValue: "Uint8Array",
+  Timestamp: "Date",
+  Empty: "{}"
 }
 
 export class Field {

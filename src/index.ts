@@ -2,6 +2,13 @@ import { CodeGeneratorRequest, CodeGeneratorResponse } from "google-protobuf/goo
 import { ExportMap } from "./ExportMap";
 import { FileGenerator } from "./FileGenerator";
 
+const FILES_TO_EXCLUDE = [
+  "google/protobuf/timestamp.proto",
+  "google/protobuf/wrappers.proto",
+  "google/protobuf/empty.proto",
+  "google/protobuf/any.proto"
+]
+
 const allStdinBuffer = (): Promise<Buffer> => new Promise((resolve, reject) => {
   const ret: Buffer[] = [];
   let len = 0;
@@ -46,7 +53,9 @@ const main = async (): Promise<void> => {
     const codeGenResponse = new CodeGeneratorResponse();
 
     codeGenRequest.getFileToGenerateList().forEach((fileName) => {
-      generateFile(fileName, exportMap, codeGenResponse)
+      if (FILES_TO_EXCLUDE.indexOf(fileName) === -1) {
+        generateFile(fileName, exportMap, codeGenResponse)
+      }
     })
 
     process.stdout.write(new Buffer(codeGenResponse.serializeBinary()));

@@ -4,6 +4,13 @@ import { FileDescriptorProto } from "google-protobuf/google/protobuf/descriptor_
 import { Entity } from "./Entity";
 import { Enum } from "./Enum";
 
+const SPECIFIC_IMPORT_TYPES = [
+  "google/protobuf/timestamp.proto",
+  "google/protobuf/wrappers.proto",
+  "google/protobuf/empty.proto",
+  "google/protobuf/any.proto"
+]
+
 export class FileGenerator {
   private readonly fileDescriptor: FileDescriptorProto
   private readonly exportMap: ExportMap
@@ -27,8 +34,10 @@ export class FileGenerator {
 
   private printImports(){
     this.fileDescriptor.getDependencyList().forEach((dependency: string) => {
-      const pkgModule = this.exportMap.findPkgModule(dependency)
-      this.printer.printLn(`import * as ${pkgModule.aliasName} from "./${pkgModule.importName}";`);
+      if (SPECIFIC_IMPORT_TYPES.indexOf(dependency) === -1) {
+        const pkgModule = this.exportMap.findPkgModule(dependency)
+        this.printer.printLn(`import * as ${pkgModule.aliasName} from "./${pkgModule.importName}";`);
+      }
     });
   }
 
