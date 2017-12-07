@@ -1,0 +1,13 @@
+<%_ obj.messageTypeList.forEach((message) => { %>
+export interface I<%=message.name%> {
+  <%_ message.fieldList.forEach((field) => { -%>
+    <%_ if(helpers.isSpecificFieldType(field)) { -%>
+  <%= field.name -%>?: <%= helpers.fieldType(field, obj.name) %> | null
+    <%_ } else if (helpers.isSimpleType(field)) {-%>
+  <%= field.name -%>: <%= helpers.fieldType(field, obj.name) %>
+    <%_ } else {-%>
+  <%= field.name -%>?: <%= helpers.fieldType(field, obj.name) %>
+    <%_ } -%>
+  <%_ }) -%>
+}
+<% }) -%>

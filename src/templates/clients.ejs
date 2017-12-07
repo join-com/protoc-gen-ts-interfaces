@@ -1,0 +1,15 @@
+<%_ obj.serviceList.forEach((svc) => { -%>
+export class <%=svc.name%>Client extends Client {
+  <%_ svc.methodList.forEach((method) => { -%>
+    <%_ if(method.serverStreaming) { -%>
+  public <%= helpers.toLower(method.name) -%>(call: {}): ClientReadableStream {
+    return super.makeRequest('<%= method.name -%>', call)
+  }
+    <%_ } else { -%>
+  public <%= helpers.toLower(method.name) -%>(req: <%= helpers.findMessageByType(method.inputType, obj.name) %>): Promise<<%= helpers.findMessageByType(method.outputType, obj.name) %>['result']> {
+    return super.makeRequest('<%= method.name -%>', req)
+  }
+      <%_ } -%>
+  <%_ }) -%>
+}
+<%_ }) -%>

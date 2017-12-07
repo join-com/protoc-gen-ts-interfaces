@@ -1,0 +1,11 @@
+<%_ obj.serviceList.forEach((svc) => { -%>
+export interface I<%=svc.name%> {
+<%_ svc.methodList.forEach((method) => { -%>
+  <%_ if(method.serverStreaming) { -%>
+  <%= helpers.toLower(method.name) -%>(call: ServerWriteableStream): void
+  <%_ } else { -%>
+  <%= helpers.toLower(method.name) -%>(req: <%= helpers.findMessageByType(method.inputType, obj.name) %>): Promise<<%= helpers.findMessageByType(method.outputType, obj.name) %>['result']>
+  <%_ } -%>
+<%_ }) -%>
+}
+<%_ }) -%>

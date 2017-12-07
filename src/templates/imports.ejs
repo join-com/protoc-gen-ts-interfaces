@@ -1,0 +1,10 @@
+<% if(obj.serviceList.length > 0) { -%>
+  <%_ if(helpers.hasSteamRpc(obj.serviceList)) { -%>
+import { ServerWriteableStream, ClientReadableStream } from 'grpc'
+  <%_ } -%>
+import { Client } from '../grpc/client'
+<% } -%>
+
+<% obj.dependencyList.filter(helpers.isNoSpecificImport).forEach((dep) => { -%>
+import * as <%= helpers.moduleAliasName(dep) -%> from './<%= helpers.moduleImportName(dep) -%>'
+<% }) -%>

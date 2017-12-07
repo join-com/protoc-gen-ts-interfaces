@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@types/dot@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@types/dot/-/dot-1.1.2.tgz#dd9f794c74f4e26076273e45f55b8b036f3aaf5d"
+"@types/ejs@^2.3.33":
+  version "2.3.33"
+  resolved "https://registry.yarnpkg.com/@types/ejs/-/ejs-2.3.33.tgz#0a4e0a7aeee09944154b06ce5a2ac6a118f92b00"
 
 "@types/events@*":
   version "1.1.0"
@@ -521,6 +521,10 @@ color-name@^1.1.1:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.3.tgz#a7d0558bd89c42f795dd42328f740831ca53bc25"
 
+colors@0.6.x:
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/colors/-/colors-0.6.2.tgz#2423fe6678ac0c5dae8852e5d0e5be08c997abcc"
+
 combined-stream@^1.0.5, combined-stream@~1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/combined-stream/-/combined-stream-1.0.5.tgz#938370a57b4a51dea2c77c15d5c5fdf895164009"
@@ -659,10 +663,6 @@ diff@^3.2.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.4.0.tgz#b1d85507daf3964828de54b37d0d73ba67dda56c"
 
-dot@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/dot/-/dot-1.1.2.tgz#c7377019fc4e550798928b2b9afeb66abfa1f2f9"
-
 duplexer@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/duplexer/-/duplexer-0.1.1.tgz#ace6ff808c1ce66b57d1ebf97977acb02334cfc1"
@@ -672,6 +672,10 @@ ecc-jsbn@~0.1.1:
   resolved "https://registry.yarnpkg.com/ecc-jsbn/-/ecc-jsbn-0.1.1.tgz#0fc73a9ed5f0d53c38193398523ef7e543777505"
   dependencies:
     jsbn "~0.1.0"
+
+ejs@^2.5.7:
+  version "2.5.7"
+  resolved "https://registry.yarnpkg.com/ejs/-/ejs-2.5.7.tgz#cc872c168880ae3c7189762fd5ffc00896c9518a"
 
 errno@^0.1.4:
   version "0.1.4"
@@ -1853,7 +1857,7 @@ once@^1.3.0, once@^1.3.3, once@^1.4.0:
   dependencies:
     wrappy "1"
 
-optimist@^0.6.1:
+optimist@0.6.x, optimist@^0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/optimist/-/optimist-0.6.1.tgz#da3ea74686fa21a19a111c326e90eb15a0196686"
   dependencies:
@@ -2612,6 +2616,13 @@ walker@~1.0.5:
   dependencies:
     makeerror "1.0.x"
 
+watch@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/watch/-/watch-1.0.2.tgz#340a717bde765726fa0aa07d721e0147a551df0c"
+  dependencies:
+    exec-sh "^0.2.0"
+    minimist "^1.2.0"
+
 watch@~0.18.0:
   version "0.18.0"
   resolved "https://registry.yarnpkg.com/watch/-/watch-0.18.0.tgz#28095476c6df7c90c963138990c0a5423eb4b986"
@@ -2678,6 +2689,13 @@ worker-farm@^1.3.1:
   dependencies:
     errno "^0.1.4"
     xtend "^4.0.1"
+
+wr@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/wr/-/wr-1.3.1.tgz#4214dfc0a738df84fc9af2d5f77d972aabc3a806"
+  dependencies:
+    colors "0.6.x"
+    optimist "0.6.x"
 
 wrap-ansi@^2.0.0:
   version "2.1.0"

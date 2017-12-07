@@ -1,6 +1,21 @@
 import { CodeGeneratorRequest, CodeGeneratorResponse } from "google-protobuf/google/protobuf/compiler/plugin_pb";
-import { ExportMap } from "./ExportMap";
-import { FileGenerator } from "./FileGenerator";
+import { EntityIndex } from "./EntityIndex";
+import * as ejs from "ejs";
+import { MESSAGE_TYPE, ENUM_TYPE, getTypeName } from "./FieldTypes";
+
+const SPECIFIC_TYPES: { [index: string]: string } = {
+  DoubleValue: "number",
+  FloatValue: "number",
+  Int64Value: "number",
+  UInt64Value: "number",
+  Int32Value: "number",
+  UInt32Value: "number",
+  BoolValue: "boolean",
+  StringValue: "string",
+  BytesValue: "Uint8Array",
+  Timestamp: "Date",
+  Empty: "{}"
+}
 
 const FILES_TO_EXCLUDE = [
   "google/protobuf/timestamp.proto",
@@ -36,25 +51,84 @@ const getCodeGenRequest = async () => {
   return CodeGeneratorRequest.deserializeBinary(typedInputBuff);
 }
 
-const generateFile = (fileName: string, exportMap: ExportMap, codeGenResponse: CodeGeneratorResponse) => {
-  const pkgModule = exportMap.findPkgModule(fileName)
-  const fileGenerator = new FileGenerator(pkgModule.fileDescriptor, exportMap)
+const generateFile = (fileName: string, content: string, codeGenResponse: CodeGeneratorResponse) => {
   const outputFileName = fileName.replace(".proto", ".ts")
   const thisFile = new CodeGeneratorResponse.File();
   thisFile.setName(outputFileName);
-  thisFile.setContent(fileGenerator.print());
+  thisFile.setContent(content);
   codeGenResponse.addFile(thisFile);
 }
+
+const moduleAliasName = (filePath: string): string => filePath.replace(".proto", "").split("/").slice(-1)[0]
+
+const hasSteamRpc = (sericesList: any): boolean =>{
+  const svcs = sericesList.find((list: any) => {
+    return list.methodList.find((method: any) => method.clientStreaming || method.serverStreaming)
+  })
+  return !!svcs
+}
+
+const extractType = (msgType: string): string => msgType.split('.').slice(-1)[0]
+
+const findMessageByType = (entityIndex: EntityIndex) => (msgType: string, moduleName: string): string => {
+  const name = extractType(msgType)
+  if (Object.keys(SPECIFIC_TYPES).indexOf(name) !== -1) { return SPECIFIC_TYPES[name] }
+  const msg = entityIndex.findMessageEntity(name)
+  if (msg.moduleName === moduleName) { return msg.printName }
+  return `${moduleAliasName(msg.moduleName)}.${msg.printName}`
+}
+
+const isSpecificFieldType = (field: any): boolean => {
+  if (field.type !== MESSAGE_TYPE) { return false }
+  const name = extractType(field.typeName)
+  return Object.keys(SPECIFIC_TYPES).indexOf(name) !== -1
+}
+
+const fieldType = (entityIndex: EntityIndex) => (field: any, moduleName: string): string => {
+  if ((field.type === MESSAGE_TYPE) || (field.type === ENUM_TYPE)) {
+    return findMessageByType(entityIndex)(field.typeName, moduleName)
+  }
+  return getTypeName(field.type)
+}
+
+const isNoSpecificImport = (fileName: string) => FILES_TO_EXCLUDE.indexOf(fileName) === -1
+
+const isSimpleType = (field: any): boolean => field.type !== MESSAGE_TYPE
+
+const toLower = (name: string): string => name.charAt(0).toLowerCase() + name.slice(1)
+
+const render = (obj: any, entityIndex: EntityIndex) => new Promise((resolve, reject) => {
+  const helpers = {
+    toLower,
+    isSpecificFieldType,
+    isNoSpecificImport,
+    isSimpleType,
+    fieldType: fieldType(entityIndex),
+    moduleAliasName,
+    hasSteamRpc,
+    moduleImportName: (filePath: string): string => filePath.replace(".proto", ""),
+    findMessageByType: findMessageByType(entityIndex)
+  }
+  ejs.renderFile(`${__dirname}/templates/module.ejs`, { obj, helpers } , (err, str) => {
+    err ? reject(err) : resolve(str)
+  })
+})
 
 const main = async (): Promise<void> => {
   try {
     const codeGenRequest = await getCodeGenRequest();
-    const exportMap = new ExportMap(codeGenRequest.getProtoFileList());
+    const entityIndex = new EntityIndex(codeGenRequest.getProtoFileList());
+    const contents: any = {}
+    const promises = codeGenRequest.getProtoFileList().map(async (protoFileDescriptor) => {
+      contents[protoFileDescriptor.getName()] = await render(protoFileDescriptor.toObject(), entityIndex)
+    })
+    await Promise.all(promises)
+
     const codeGenResponse = new CodeGeneratorResponse();
 
     codeGenRequest.getFileToGenerateList().forEach((fileName) => {
       if (FILES_TO_EXCLUDE.indexOf(fileName) === -1) {
-        generateFile(fileName, exportMap, codeGenResponse)
+        generateFile(fileName, contents[fileName], codeGenResponse)
       }
     })
 

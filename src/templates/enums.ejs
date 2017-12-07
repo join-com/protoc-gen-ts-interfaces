@@ -1,0 +1,7 @@
+<%_ obj.enumTypeList.forEach((enumMessage) => { %>
+export enum <%=enumMessage.name%> {
+  <%_ enumMessage.valueList.forEach((value) => { -%>
+  <%= value.name.toUpperCase() -%> = '<%= value.name.toUpperCase() %>',
+  <%_ }) -%>
+}
+<%_ }) -%>
