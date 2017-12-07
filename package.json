@@ -1,30 +1,47 @@
 {
   "name": "protoc-gen-ts-interfaces",
   "version": "0.0.1",
-  "description": "Protocol Buffers Compiler (protoc) plugin for gerenting interfaces in TypeScript.",
+  "description": "Protocol Buffers Compiler (protoc) plugin for generating interfaces in TypeScript.",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "repository": "https://github.com/talendo/protoc-gen-ts-interfaces.git",
+  "bugs": {
+    "url": "https://github.com/talendo/protoc-gen-ts-interfaces/issues"
+  },
   "author": "JOIN Team",
+  "keywords": [
+    "TypeScript",
+    "grpc",
+    "proto",
+    "tests",
+    "protobuf"
+  ],
   "license": "MIT",
   "scripts": {
     "lint": "tslint src/**/*.ts",
     "lint:fix": "yarn lint --fix",
     "build:clean": "rm -rf dist",
-    "build": "yarn build:clean && mkdir -p dist/templates && cp -R src/templates/ dist/templates/ && tsc",
-    "build:watch": "wr --exec 'yarn build' ./src",
-    "test": "jest"
+    "build": "yarn build:clean && yarn build:templates && tsc",
+    "build:templates": "rm -rf dist/templates && mkdir -p dist/templates && cp -R src/templates/ dist/templates/",
+    "build:watch:templates": "wr --exec 'yarn build:templates' ./src/templates",
+    "build:watch:code": "tsc --watch",
+    "build:watch": "concurrently \"yarn build:watch:templates\" \"yarn build:watch:code\"",
+    "test": "jest",
+    "prepare": "yarn build"
   },
   "bin": {
     "protoc-gen-ts-interfaces": "bin/protoc-gen-ts-interfaces"
   },
   "dependencies": {
     "ejs": "^2.5.7",
-    "google-protobuf": "^3.5.0",
-    "watch": "^1.0.2",
-    "wr": "^1.3.1"
+    "google-protobuf": "^3.5.0"
   },
   "devDependencies": {
+    "wr": "^1.3.1",
     "@types/ejs": "^2.3.33",
     "@types/google-protobuf": "^3.2.7",
-    "@types/node": "^8.0.54",
+    "@types/node": "^8.0.56",
+    "concurrently": "^3.5.1",
     "jest-cli": "^21.2.1",
     "ts-jest": "^21.2.4",
     "tslint": "^5.8.0",
