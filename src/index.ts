@@ -97,8 +97,12 @@ const isSimpleType = (field: any): boolean => field.type !== MESSAGE_TYPE
 
 const toLower = (name: string): string => name.charAt(0).toLowerCase() + name.slice(1)
 
+const snakeToCamel = (str: string): string =>
+  str.replace(/(\_\w)/g, (m) => m[1].toUpperCase())
+
 const render = (obj: any, entityIndex: EntityIndex) => new Promise((resolve, reject) => {
   const helpers = {
+    snakeToCamel,
     toLower,
     isSpecificFieldType,
     isNoSpecificImport,
