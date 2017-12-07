@@ -1,6 +1,6 @@
 {
-  "name": "protoc-gen-ts-interfaces",
-  "version": "0.0.1",
+  "name": "ts-interfaces-protoc-gen",
+  "version": "0.0.3",
   "description": "Protocol Buffers Compiler (protoc) plugin for generating interfaces in TypeScript.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -30,7 +30,7 @@
     "prepare": "yarn build"
   },
   "bin": {
-    "protoc-gen-ts-interfaces": "bin/protoc-gen-ts-interfaces"
+    "ts-interfaces-protoc-gen": "bin/ts-interfaces-protoc-gen"
   },
   "dependencies": {
     "ejs": "^2.5.7",
