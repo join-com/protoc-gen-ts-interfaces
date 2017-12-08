@@ -78,8 +78,7 @@ const findMessageByType = (entityIndex: EntityIndex) => (msgType: string, module
   if (Object.keys(SPECIFIC_TYPES).indexOf(name) !== -1) { return SPECIFIC_TYPES[name] }
   const msg = entityIndex.findMessageEntity(name)
   if (msg.resultField) {
-    const resultText = fieldType(entityIndex)(msg.resultField, moduleName)
-    return msg.isResultFieldTypeRepeated ? `${resultText}[]` : resultText
+    return fieldType(entityIndex)(msg.resultField, moduleName)
   }
   if (msg.moduleName === moduleName) { return msg.printName }
   usedModules.push([moduleName, msg.moduleName ])
