@@ -1,5 +1,8 @@
 <%_ obj.serviceList.forEach((svc) => { -%>
 export class <%=svc.name%>Client extends Client {
+  constructor(host: string) {
+    super(host, '<%= svc.name -%>')
+  }
   <%_ svc.methodList.forEach((method) => { -%>
     <%_ if(method.serverStreaming) { -%>
   public <%= helpers.toLower(method.name) -%>(call: {}): ClientReadableStream {

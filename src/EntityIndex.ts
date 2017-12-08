@@ -1,7 +1,8 @@
 import {
   FileDescriptorProto,
   DescriptorProto,
-  EnumDescriptorProto
+  EnumDescriptorProto,
+  FieldDescriptorProto
 } from "google-protobuf/google/protobuf/descriptor_pb";
 
 export interface Entity {
@@ -9,6 +10,7 @@ export interface Entity {
   printName: string
   moduleName: string
   resultFieldType: string | undefined
+  isResultFieldTypeRepeated: boolean
 }
 
 export class EntityIndex {
@@ -27,7 +29,8 @@ export class EntityIndex {
       name: msg.name as string,
       printName: `I${msg.name}`,
       moduleName,
-      resultFieldType: hasResultField && hasResultField.typeName
+      resultFieldType: hasResultField && hasResultField.typeName,
+      isResultFieldTypeRepeated: hasResultField && (hasResultField.label === FieldDescriptorProto.Label.LABEL_REPEATED)
     }
     this.messageEntities.push(messageEntity)
   }
@@ -37,6 +40,7 @@ export class EntityIndex {
       name: message.getName(),
       printName: message.getName(),
       resultFieldType: undefined,
+      isResultFieldTypeRepeated: false,
       moduleName
     };
     this.messageEntities.push(messageEntity)
