@@ -1,6 +1,6 @@
 {
   "name": "ts-interfaces-protoc-gen",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Protocol Buffers Compiler (protoc) plugin for generating interfaces in TypeScript.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
