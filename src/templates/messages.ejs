@@ -4,7 +4,11 @@ export interface I<%=message.name%> {
     <%_ if(helpers.isSpecificFieldType(field)) { -%>
   <%= helpers.snakeToCamel(field.name) -%>?: <%= helpers.fieldType(field, obj.name) %> | null
     <%_ } else if (helpers.isSimpleType(field)) {-%>
+      <%_ if(field.options && field.options.deprecated) { -%>
+  <%= helpers.snakeToCamel(field.name) -%>?: <%= helpers.fieldType(field, obj.name) %> // deprecated
+      <%_ } else {-%>
   <%= helpers.snakeToCamel(field.name) -%>: <%= helpers.fieldType(field, obj.name) %>
+      <%_ } -%>
     <%_ } else {-%>
   <%= helpers.snakeToCamel(field.name) -%>?: <%= helpers.fieldType(field, obj.name) %>
     <%_ } -%>
