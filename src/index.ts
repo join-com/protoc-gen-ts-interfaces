@@ -74,6 +74,9 @@ const findMessageByType = (entityIndex: EntityIndex) => (msgType: string, module
   const name = extractType(msgType)
   if (Object.keys(SPECIFIC_TYPES).indexOf(name) !== -1) { return SPECIFIC_TYPES[name] }
   const msg = entityIndex.findMessageEntity(name)
+  if (msg.resultFieldType) {
+    return findMessageByType(entityIndex)(msg.resultFieldType, moduleName)
+  }
   if (msg.moduleName === moduleName) { return msg.printName }
   return `${moduleAliasName(msg.moduleName)}.${msg.printName}`
 }

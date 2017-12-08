@@ -8,6 +8,7 @@ export interface Entity {
   name: string
   printName: string
   moduleName: string
+  resultFieldType: string | undefined
 }
 
 export class EntityIndex {
@@ -19,10 +20,24 @@ export class EntityIndex {
     })
   }
 
-  addMessage(moduleName: string, message: DescriptorProto | EnumDescriptorProto, isEnum = false) {
+  addMessage(moduleName: string, message: DescriptorProto | EnumDescriptorProto) {
+    const msg: any = message.toObject()
+    const hasResultField = msg.fieldList.find((field: any) => field.name === 'result')
+    console.error(hasResultField)
+    const messageEntity: Entity = {
+      name: msg.name as string,
+      printName: `I${msg.name}`,
+      moduleName,
+      resultFieldType: hasResultField && hasResultField.typeName
+    }
+    this.messageEntities.push(messageEntity)
+  }
+
+  addEnum(moduleName: string, message: DescriptorProto | EnumDescriptorProto) {
     const messageEntity: Entity = {
       name: message.getName(),
-      printName: isEnum ? message.getName() : `I${message.getName()}`,
+      printName: message.getName(),
+      resultFieldType: undefined,
       moduleName
     };
     this.messageEntities.push(messageEntity)
@@ -30,11 +45,14 @@ export class EntityIndex {
 
   addFileDescriptor(fileDescriptor: FileDescriptorProto) {
     fileDescriptor.getMessageTypeList().forEach(messageType => {
+      if (messageType.getName() == 'JobInfosResponse') {
+        console.error(messageType.toObject())
+      }
       this.addMessage(fileDescriptor.getName(), messageType);
     });
 
     fileDescriptor.getEnumTypeList().forEach(enumType => {
-      this.addMessage(fileDescriptor.getName(), enumType, true);
+      this.addEnum(fileDescriptor.getName(), enumType);
     });
   }
 

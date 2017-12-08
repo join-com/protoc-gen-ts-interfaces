@@ -6,7 +6,7 @@ export class <%=svc.name%>Client extends Client {
     return super.makeRequest('<%= method.name -%>', call)
   }
     <%_ } else { -%>
-  public <%= helpers.toLower(method.name) -%>(req: <%= helpers.findMessageByType(method.inputType, obj.name) %>): Promise<<%= helpers.findMessageByType(method.outputType, obj.name) %>['result']> {
+  public <%= helpers.toLower(method.name) -%>(req: <%= helpers.findMessageByType(method.inputType, obj.name) %>): Promise<<%= helpers.findMessageByType(method.outputType, obj.name) %>> {
     return super.makeRequest('<%= method.name -%>', req)
   }
       <%_ } -%>

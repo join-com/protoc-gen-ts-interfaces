@@ -4,7 +4,7 @@ export interface I<%=svc.name%> {
   <%_ if(method.serverStreaming) { -%>
   <%= helpers.toLower(method.name) -%>(call: ServerWriteableStream): void
   <%_ } else { -%>
-  <%= helpers.toLower(method.name) -%>(req: <%= helpers.findMessageByType(method.inputType, obj.name) %>): Promise<<%= helpers.findMessageByType(method.outputType, obj.name) %>['result']>
+  <%= helpers.toLower(method.name) -%>(req: <%= helpers.findMessageByType(method.inputType, obj.name) %>): Promise<<%= helpers.findMessageByType(method.outputType, obj.name) %>>
   <%_ } -%>
 <%_ }) -%>
 }
