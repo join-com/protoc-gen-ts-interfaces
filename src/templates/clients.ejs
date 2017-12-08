@@ -6,11 +6,11 @@ export class <%=svc.name%>Client extends Client {
   <%_ svc.methodList.forEach((method) => { -%>
     <%_ if(method.serverStreaming) { -%>
   public <%= helpers.toLower(method.name) -%>(call: {}): ClientReadableStream {
-    return super.makeRequest('<%= method.name -%>', call)
+    return super.makeRequest('<%= helpers.toLower(method.name) -%>', call)
   }
     <%_ } else { -%>
   public <%= helpers.toLower(method.name) -%>(req: <%= helpers.findMessageByType(method.inputType, obj.name) %>): Promise<<%= helpers.findMessageByType(method.outputType, obj.name) %>> {
-    return super.makeRequest('<%= method.name -%>', req)
+    return super.makeRequest('<%= helpers.toLower(method.name) -%>', req)
   }
       <%_ } -%>
   <%_ }) -%>

@@ -1,4 +1,5 @@
 import { CodeGeneratorRequest, CodeGeneratorResponse } from "google-protobuf/google/protobuf/compiler/plugin_pb";
+import { FieldDescriptorProto } from "google-protobuf/google/protobuf/descriptor_pb";
 import { EntityIndex } from "./EntityIndex";
 import * as ejs from "ejs";
 import { MESSAGE_TYPE, ENUM_TYPE, getTypeName } from "./FieldTypes";
@@ -76,8 +77,8 @@ const findMessageByType = (entityIndex: EntityIndex) => (msgType: string, module
   const name = extractType(msgType)
   if (Object.keys(SPECIFIC_TYPES).indexOf(name) !== -1) { return SPECIFIC_TYPES[name] }
   const msg = entityIndex.findMessageEntity(name)
-  if (msg.resultFieldType) {
-    const resultText = findMessageByType(entityIndex)(msg.resultFieldType, moduleName)
+  if (msg.resultField) {
+    const resultText = fieldType(entityIndex)(msg.resultField, moduleName)
     return msg.isResultFieldTypeRepeated ? `${resultText}[]` : resultText
   }
   if (msg.moduleName === moduleName) { return msg.printName }
@@ -93,7 +94,9 @@ const isSpecificFieldType = (field: any): boolean => {
 
 const fieldType = (entityIndex: EntityIndex) => (field: any, moduleName: string): string => {
   if ((field.type === MESSAGE_TYPE) || (field.type === ENUM_TYPE)) {
-    return findMessageByType(entityIndex)(field.typeName, moduleName)
+    const msg = findMessageByType(entityIndex)(field.typeName, moduleName)
+    return field.label === FieldDescriptorProto.Label.LABEL_REPEATED ? `${msg}[]` : msg
+
   }
   return getTypeName(field.type)
 }

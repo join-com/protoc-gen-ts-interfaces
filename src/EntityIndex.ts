@@ -9,7 +9,7 @@ export interface Entity {
   name: string
   printName: string
   moduleName: string
-  resultFieldType: string | undefined
+  resultField: any | undefined
   isResultFieldTypeRepeated: boolean
 }
 
@@ -29,7 +29,7 @@ export class EntityIndex {
       name: msg.name as string,
       printName: `I${msg.name}`,
       moduleName,
-      resultFieldType: hasResultField && hasResultField.typeName,
+      resultField: hasResultField,
       isResultFieldTypeRepeated: hasResultField && (hasResultField.label === FieldDescriptorProto.Label.LABEL_REPEATED)
     }
     this.messageEntities.push(messageEntity)
@@ -39,7 +39,7 @@ export class EntityIndex {
     const messageEntity: Entity = {
       name: message.getName(),
       printName: message.getName(),
-      resultFieldType: undefined,
+      resultField: undefined,
       isResultFieldTypeRepeated: false,
       moduleName
     };
