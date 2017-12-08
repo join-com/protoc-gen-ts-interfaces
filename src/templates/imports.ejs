@@ -5,6 +5,6 @@ import { ServerWriteableStream, ClientReadableStream } from 'grpc'
 import { Client } from '../grpc/client'
 <% } -%>
 
-<% obj.dependencyList.filter(helpers.isNoSpecificImport).forEach((dep) => { -%>
+<% helpers.findUsedModules(obj.name).forEach((dep) => { -%>
 import * as <%= helpers.moduleAliasName(dep) -%> from './<%= helpers.moduleImportName(dep) -%>'
 <% }) -%>

@@ -51,11 +51,11 @@ const getCodeGenRequest = async () => {
   return CodeGeneratorRequest.deserializeBinary(typedInputBuff);
 }
 
-const generateFile = (fileName: string, content: string, codeGenResponse: CodeGeneratorResponse) => {
+const generateFile = (fileName: string, content: string, imports: string, codeGenResponse: CodeGeneratorResponse) => {
   const outputFileName = fileName.replace(".proto", ".ts")
   const thisFile = new CodeGeneratorResponse.File();
   thisFile.setName(outputFileName);
-  thisFile.setContent(content);
+  thisFile.setContent('// AUTO GENERATED CODE. DO NOT CHANGE!\n' + imports + content);
   codeGenResponse.addFile(thisFile);
 }
 
@@ -70,6 +70,8 @@ const hasSteamRpc = (sericesList: any): boolean =>{
 
 const extractType = (msgType: string): string => msgType.split('.').slice(-1)[0]
 
+const usedModules: string[][] = []
+
 const findMessageByType = (entityIndex: EntityIndex) => (msgType: string, moduleName: string): string => {
   const name = extractType(msgType)
   if (Object.keys(SPECIFIC_TYPES).indexOf(name) !== -1) { return SPECIFIC_TYPES[name] }
@@ -78,6 +80,7 @@ const findMessageByType = (entityIndex: EntityIndex) => (msgType: string, module
     return findMessageByType(entityIndex)(msg.resultFieldType, moduleName)
   }
   if (msg.moduleName === moduleName) { return msg.printName }
+  usedModules.push([moduleName, msg.moduleName ])
   return `${moduleAliasName(msg.moduleName)}.${msg.printName}`
 }
 
@@ -94,8 +97,6 @@ const fieldType = (entityIndex: EntityIndex) => (field: any, moduleName: string)
   return getTypeName(field.type)
 }
 
-const isNoSpecificImport = (fileName: string) => FILES_TO_EXCLUDE.indexOf(fileName) === -1
-
 const isSimpleType = (field: any): boolean => field.type !== MESSAGE_TYPE
 
 const toLower = (name: string): string => name.charAt(0).toLowerCase() + name.slice(1)
@@ -103,12 +104,30 @@ const toLower = (name: string): string => name.charAt(0).toLowerCase() + name.sl
 const snakeToCamel = (str: string): string =>
   str.replace(/(\_\w)/g, (m) => m[1].toUpperCase())
 
+const findUsedModules = (moduleName: string) => {
+  const modules = usedModules.filter(([name, _]) => name === moduleName)
+  const names = new Set(modules.map(([_, name]) => name))
+  return Array.from(names)
+}
+
+const renderImports = (obj: any) => new Promise((resolve, reject) => {
+  const helpers = {
+    findUsedModules,
+    moduleAliasName,
+    hasSteamRpc,
+    moduleImportName: (filePath: string): string => filePath.replace(".proto", ""),
+  }
+  ejs.renderFile(`${__dirname}/templates/imports.ejs`, { obj, helpers }, (err, str) => {
+    err ? reject(err) : resolve(str)
+  })
+})
+
 const render = (obj: any, entityIndex: EntityIndex) => new Promise((resolve, reject) => {
   const helpers = {
+    findUsedModules,
     snakeToCamel,
     toLower,
     isSpecificFieldType,
-    isNoSpecificImport,
     isSimpleType,
     fieldType: fieldType(entityIndex),
     moduleAliasName,
@@ -126,8 +145,10 @@ const main = async (): Promise<void> => {
     const codeGenRequest = await getCodeGenRequest();
     const entityIndex = new EntityIndex(codeGenRequest.getProtoFileList());
     const contents: any = {}
+    const imports: any = {}
     const promises = codeGenRequest.getProtoFileList().map(async (protoFileDescriptor) => {
       contents[protoFileDescriptor.getName()] = await render(protoFileDescriptor.toObject(), entityIndex)
+      imports[protoFileDescriptor.getName()] = await renderImports(protoFileDescriptor.toObject())
     })
     await Promise.all(promises)
 
@@ -135,7 +156,7 @@ const main = async (): Promise<void> => {
 
     codeGenRequest.getFileToGenerateList().forEach((fileName) => {
       if (FILES_TO_EXCLUDE.indexOf(fileName) === -1) {
-        generateFile(fileName, contents[fileName], codeGenResponse)
+        generateFile(fileName, contents[fileName], imports[fileName], codeGenResponse)
       }
     })
 

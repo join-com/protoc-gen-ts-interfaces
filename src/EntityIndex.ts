@@ -23,7 +23,6 @@ export class EntityIndex {
   addMessage(moduleName: string, message: DescriptorProto | EnumDescriptorProto) {
     const msg: any = message.toObject()
     const hasResultField = msg.fieldList.find((field: any) => field.name === 'result')
-    console.error(hasResultField)
     const messageEntity: Entity = {
       name: msg.name as string,
       printName: `I${msg.name}`,
@@ -45,9 +44,6 @@ export class EntityIndex {
 
   addFileDescriptor(fileDescriptor: FileDescriptorProto) {
     fileDescriptor.getMessageTypeList().forEach(messageType => {
-      if (messageType.getName() == 'JobInfosResponse') {
-        console.error(messageType.toObject())
-      }
       this.addMessage(fileDescriptor.getName(), messageType);
     });
 
