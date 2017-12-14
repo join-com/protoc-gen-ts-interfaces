@@ -92,12 +92,14 @@ const isSpecificFieldType = (field: any): boolean => {
 }
 
 const fieldType = (entityIndex: EntityIndex) => (field: any, moduleName: string): string => {
+  let msg: string
   if ((field.type === MESSAGE_TYPE) || (field.type === ENUM_TYPE)) {
-    const msg = findMessageByType(entityIndex)(field.typeName, moduleName)
-    return field.label === FieldDescriptorProto.Label.LABEL_REPEATED ? `${msg}[]` : msg
-
+    msg = findMessageByType(entityIndex)(field.typeName, moduleName)
+  } else  {
+    msg = getTypeName(field.type)
   }
-  return getTypeName(field.type)
+
+  return field.label === FieldDescriptorProto.Label.LABEL_REPEATED ? `${msg}[]` : msg
 }
 
 const isSimpleType = (field: any): boolean => field.type !== MESSAGE_TYPE
