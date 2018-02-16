@@ -2,7 +2,7 @@
 export interface I<%=svc.name%> {
 <%_ svc.methodList.forEach((method) => { -%>
   <%_ if(method.serverStreaming) { -%>
-  <%= helpers.toLower(method.name) -%>(call: ServerWriteableStream): void
+  <%= helpers.toLower(method.name) -%>(call: ServerWriteableStream<<%= helpers.findMessageByType(method.outputType, obj.name) %>>): void
   <%_ } else { -%>
   <%= helpers.toLower(method.name) -%>(req: <%= helpers.findMessageByType(method.inputType, obj.name) %>): Promise<<%= helpers.findMessageByType(method.outputType, obj.name) %>>
   <%_ } -%>

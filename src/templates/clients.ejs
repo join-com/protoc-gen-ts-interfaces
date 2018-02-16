@@ -5,7 +5,7 @@ export class <%=svc.name%>Client extends Client {
   }
   <%_ svc.methodList.forEach((method) => { -%>
     <%_ if(method.serverStreaming) { -%>
-  public <%= helpers.toLower(method.name) -%>(call: {}): ClientReadableStream {
+  public <%= helpers.toLower(method.name) -%>(call: {}): ClientReadableStream<<%= helpers.findMessageByType(method.outputType, obj.name) -%>> {
     return super.makeRequest('<%= helpers.toLower(method.name) -%>', call)
   }
     <%_ } else { -%>
